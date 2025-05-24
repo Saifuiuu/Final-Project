@@ -39,7 +39,74 @@ app.get('/bookdetails', async(req,res)=>{
   
 );
 
+app.get('/fines', async (req,res)=>{
+  try{
+    const result= await pool.query('select * from fines ;');
+    res.json(result.rows);
+  }
+  catch(error){
+res.status(500).json({error:error.message});
+  }
+}); 
 
+
+app.get('/issuedbookdetails', async(req,res)=>{
+  try {
+    const result= await pool.query('select * from issuedbooks ;');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({error:error.message});
+  }
+});
+app.get('/librariendetails', async(req,res)=>{
+  try {
+    const result= await pool.query('select * from librarians ;');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({error:error.message});
+  }
+});
+app.get('/categoriesdetails', async(req,res)=>{
+  try {
+    const result= await pool.query('select * from categories ;');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({error:error.message});
+  }
+});
+app.get('/bookcopiesdetails', async(req,res)=>{
+  try {
+    const result= await pool.query('select * from bookcopies ;');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({error:error.message});
+  }
+});
+
+app.get('/membersdetails', async(req,res)=>{
+  try {
+    const result= await pool.query('select * from members ;');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({error:error.message});
+  }
+});
+app.get('/reservationsdetails', async(req,res)=>{
+  try {
+    const result= await pool.query('select * from reservations ;');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({error:error.message});
+  }
+});
+app.get('/returnbookdetails', async(req,res)=>{
+  try {
+    const result= await pool.query('select * from returnbooks ;');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({error:error.message});
+  }
+});
 
 
 app.listen(PORT, () => {
