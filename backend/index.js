@@ -101,7 +101,7 @@ app.get('/reservationsdetails', async(req,res)=>{
 });
 app.get('/returnbookdetails', async(req,res)=>{
   try {
-    const result= await pool.query('select * from returnbooks ;');
+    const result= await pool.query('select * from returnedbooks ;');
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({error:error.message});
