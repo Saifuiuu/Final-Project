@@ -112,3 +112,71 @@ app.get('/returnbookdetails', async(req,res)=>{
 app.listen(PORT, () => {
   console.log(`Connected successfully on PORT ${PORT}`);
 });
+app.post('/addbook', async (req, res) => {
+    const { book_id, title, author_id, category_id } = req.body;
+
+    try {
+        const query = 'INSERT INTO books (book_id, title, author_id, category_id) VALUES ($1, $2, $3, $4)';
+        await pool.query(query, [book_id, title, author_id, category_id]);
+        res.send('✅ Book added successfully!');
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('❌ Error inserting book.');
+    }
+});
+app.post('/addcategory', async (req, res) => {
+    const { category_id, name } = req.body;
+
+    try {
+        const query = 'INSERT INTO categories (category_id, name) VALUES ($1, $2)';
+        await pool.query(query, [category_id, name]);
+        res.send('✅ Category added successfully!');
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('❌ Error inserting category.');
+    }
+});
+app.post('/addfine', async (req, res) => {
+    const { fine_id, return_id, amount, paid } = req.body;
+
+    try {
+        const query = 'INSERT INTO fines (fine_id, return_id, amount, paid) VALUES ($1, $2, $3, $4)';
+        await pool.query(query, [fine_id, return_id, amount, paid]);
+        res.send('✅ Fine added successfully!');
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('❌ Error inserting fine.');
+    }
+});
+
+app.post('/addmember', async (req, res) => {
+  const { member_id, name, contact, membership_type } = req.body;
+
+  try {
+    const query = `
+      INSERT INTO members (member_id, name, contact, membership_type)
+      VALUES ($1, $2, $3, $4)
+    `;
+    await pool.query(query, [member_id, name, contact, membership_type]);
+    res.send('✅ Member added successfully!');
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('❌ Error inserting member.');
+  }
+});
+
+app.post('/addlibrarian', async (req, res) => {
+  const { librarian_id, name, email } = req.body;
+
+  try {
+    const query = `
+      INSERT INTO librarians (librarian_id, name, email)
+      VALUES ($1, $2, $3)
+    `;
+    await pool.query(query, [librarian_id, name, email]);
+    res.send("✅ Librarian added successfully!");
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("❌ Error inserting librarian.");
+  }
+});
