@@ -4,12 +4,8 @@
         <title>Final Project</title>
         <!-- Required meta tags -->
         <meta charset="utf-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, shrink-to-fit=no"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-        
         <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
             rel="stylesheet"
@@ -19,33 +15,49 @@
     </head>
 
     <body>
-        
-            <div
-                class="table-responsive"
-            >
-                <table
-                    class="table table-danger table-bordered " id="returnedbooktable"
-                >
+        <div class="container mt-4">
+            <!-- Add Return Form -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5>Add Book Return</h5>
+                </div>
+                <div class="card-body">
+                    <form id="returnForm">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="issue_id" class="form-label">Issue ID</label>
+                                <input type="number" class="form-control" id="issue_id" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="return_date" class="form-label">Return Date</label>
+                                <input type="date" class="form-control" id="return_date" required>
+                            </div>
+                            <div class="col-md-4 mb-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary">Record Return</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Returned Books Table -->
+            <div class="table-responsive">
+                <table class="table table-danger table-bordered" id="returnedbooktable">
                     <thead>
                         <tr>
                             <th scope="col">return_id</th>
                             <th scope="col">issue_id</th>
                             <th scope="col">return_date</th>
-                           
                         </tr>
                     </thead>
                     <tbody>
-                       
-                           
+                        <!-- Data will be inserted here by JavaScript -->
                     </tbody>
                 </table>
             </div>
-            
-     
-       
-    </body>
-</html>
- <script
+        </div>
+
+        <script
             src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
             integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
             crossorigin="anonymous"
@@ -56,4 +68,87 @@
             integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
             crossorigin="anonymous"
         ></script>
-<script src="js/returnedBook.js"></script> 
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Handle form submission
+                document.getElementById('returnForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form values
+                    const issueId = document.getElementById('issue_id').value;
+                    const returnDate = document.getElementById('return_date').value;
+                    
+                    // Create data object
+                    const returnData = {
+                        issue_id: issueId,
+                        return_date: returnDate
+                    };
+                    
+                    // Send POST request
+                    fetch('your-api-endpoint-for-returns', { // Replace with your actual API endpoint
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(returnData)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Add new row to table
+                        addReturnToTable(data);
+                        
+                        // Reset form
+                        document.getElementById('returnForm').reset();
+                        
+                        // Show success message
+                        alert('Book return recorded successfully!');
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error recording return: ' + error.message);
+                    });
+                });
+                
+                // Function to add a new return to the table
+                function addReturnToTable(returnRecord) {
+                    const tbody = document.querySelector('#returnedbooktable tbody');
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${returnRecord.return_id}</td>
+                        <td>${returnRecord.issue_id}</td>
+                        <td>${returnRecord.return_date}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                }
+                
+                // Function to load existing returned books
+                function loadReturnedBooks() {
+                    fetch('your-api-endpoint-for-returns') // Replace with your actual API endpoint
+                        .then(response => response.json())
+                        .then(data => {
+                            const tbody = document.querySelector('#returnedbooktable tbody');
+                            tbody.innerHTML = '';
+                            
+                            data.forEach(returnRecord => {
+                                addReturnToTable(returnRecord);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error loading returned books:', error);
+                        });
+                }
+                
+                // Load initial data
+                loadReturnedBooks();
+            });
+        </script>
+    </body>
+</html>
