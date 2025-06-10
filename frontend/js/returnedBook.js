@@ -1,6 +1,9 @@
 const url = 'https://zany-disco-jjj9pqw575gp2pvx7-6006.app.github.dev/returnbookdetails';
 const addReturnedBookUrl = 'https://zany-disco-jjj9pqw575gp2pvx7-6006.app.github.dev/addreturnedbook';
 
+let returnedBooksData = []; // Store returned books data for the chart
+let myChart; // Declare chart variable
+
 // Fetch and display returned books
 async function fetchReturnedBooks() {
     try {
@@ -10,7 +13,9 @@ async function fetchReturnedBooks() {
         if (!response.ok) {
             throw new Error("Failed to fetch returned book data");
         }
-        return response.json();
+        returnedBooksData = await response.json();
+        updateReturnedBookTable(returnedBooksData);
+        createChart(returnedBooksData);
     } catch (err) {
         showMessage(err.message, 'danger');
         console.log(err.message);
@@ -62,13 +67,63 @@ document.getElementById('addReturnedBookForm').addEventListener('submit', async 
 
         showMessage(result, 'success');
         document.getElementById('addReturnedBookForm').reset();
-        fetchReturnedBooks(); // Refresh the table
+        await fetchReturnedBooks(); // Refresh the table and chart
     } catch (error) {
         showMessage(error.message, 'danger');
         console.error('Submission error:', error);
     } finally {
         showLoader(false);
     }
+});
+
+// Chart functionality
+function createChart(data) {
+    const monthlyCounts = {};
+
+    data.forEach(item => {
+        const returnDate = new Date(item.return_date);
+        const monthYear = `${returnDate.getFullYear()}-${returnDate.getMonth() + 1}`; // Year-Month
+
+        monthlyCounts[monthYear] = (monthlyCounts[monthYear] || 0) + 1;
+    });
+
+    const labels = Object.keys(monthlyCounts).sort(); // Sort months
+    const chartData = labels.map(month => monthlyCounts[month]);
+
+    const ctx = document.getElementById('returnedBookChart').getContext('2d');
+
+    if (myChart) {
+        myChart.destroy(); // Destroy existing chart
+    }
+
+    myChart = new Chart(ctx, {
+        type: 'line', // Changed to line chart
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Number of Returned Books',
+                data: chartData,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+document.getElementById('chartButton').addEventListener('click', () => {
+    const chartContainer = document.getElementById('chartContainer');
+    chartContainer.style.display = chartContainer.style.display === 'none' ? 'block' : 'none';
 });
 
 // Helper functions
@@ -97,8 +152,7 @@ function showLoader(show) {
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const data = await fetchReturnedBooks();
-        updateReturnedBookTable(data);
+        await fetchReturnedBooks();
     } catch (error) {
         console.error("Error initializing:", error);
     }

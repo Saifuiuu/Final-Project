@@ -1,5 +1,8 @@
 const url = 'https://zany-disco-jjj9pqw575gp2pvx7-6006.app.github.dev/issuedbookdetails';
-const addIssuedBookUrl = 'https://zany-disco-jjj9pqw575gp2pvx7-6006.app.github.dev/addissuedbook'; // Add this line
+const addIssuedBookUrl = 'https://zany-disco-jjj9pqw575gp2pvx7-6006.app.github.dev/addissuedbook';
+
+let issuedBooksData = []; // Store issued books data for the chart
+let myChart; // Declare chart variable
 
 // Fetch and display issued books
 async function fetchIssuedBooks() {
@@ -8,9 +11,12 @@ async function fetchIssuedBooks() {
         const response = await fetch(url);
 
         if (!response.ok) {
-            throw new Error("failed to fetch issued book data");
+            throw new Error("Failed to fetch issued book data");
         }
-        return response.json();
+
+        issuedBooksData = await response.json();
+        updateIssuedBookTable(issuedBooksData);
+        createChart(issuedBooksData);
     } catch (err) {
         showMessage(err.message, 'danger');
         console.log(err.message);
@@ -64,13 +70,63 @@ document.getElementById('addIssuedBookForm').addEventListener('submit', async (e
 
         showMessage(result, 'success');
         document.getElementById('addIssuedBookForm').reset();
-        fetchIssuedBooks(); // Refresh the table
+        await fetchIssuedBooks(); // Refresh the table and chart
     } catch (error) {
         showMessage(error.message, 'danger');
         console.error('Submission error:', error);
     } finally {
         showLoader(false);
     }
+});
+
+// Chart functionality
+function createChart(data) {
+    const monthlyCounts = {};
+
+    data.forEach(item => {
+        const issueDate = new Date(item.issue_date);
+        const monthYear = `${issueDate.getFullYear()}-${issueDate.getMonth() + 1}`; // Year-Month
+
+        monthlyCounts[monthYear] = (monthlyCounts[monthYear] || 0) + 1;
+    });
+
+    const labels = Object.keys(monthlyCounts).sort(); // Sort months
+    const chartData = labels.map(month => monthlyCounts[month]);
+
+    const ctx = document.getElementById('issuedBookChart').getContext('2d');
+
+    if (myChart) {
+        myChart.destroy(); // Destroy existing chart
+    }
+
+    myChart = new Chart(ctx, {
+        type: 'line', // Changed to line chart
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Number of Issued Books',
+                data: chartData,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+document.getElementById('chartButton').addEventListener('click', () => {
+    const chartContainer = document.getElementById('chartContainer');
+    chartContainer.style.display = chartContainer.style.display === 'none' ? 'block' : 'none';
 });
 
 // Helper functions
@@ -98,6 +154,11 @@ function showLoader(show) {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    const data = await fetchIssuedBooks();
-    updateIssuedBookTable(data);
+    try {
+        const data = await fetchIssuedBooks();
+        updateIssuedBookTable(data);
+    } catch (error) {
+        showMessage("Failed to load issued books. Please check the API endpoint.", 'danger');
+        console.error("Error fetching issued books:", error);
+    }
 });

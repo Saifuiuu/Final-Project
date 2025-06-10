@@ -1,11 +1,18 @@
+
+
+
+//express import kr rahy hy
 const express = require('express');
+//cors import kr rahy hy 
 const cors = require('cors');
 require('dotenv').config();
+//psql ka connection object hy pool
 const pool = require('./db');
-
+//intitalizing express object for use
 const app = express();
-
+//allowing cors
 app.use(cors());
+//allowint to read in json alos
 app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
@@ -197,7 +204,9 @@ app.post('/addreservation', async (req, res) => {
         res.status(500).send("❌ Error inserting reservation.");
     }
 });
-// Add this to your Express server (app.js)
+
+// Adding bookcopy
+
 app.post('/addbookcopy', async (req, res) => {
     const { copy_id, book_id, condition } = req.body;
 
@@ -226,7 +235,9 @@ app.post('/addbookcopy', async (req, res) => {
         res.status(500).send("❌ Error adding book copy: " + err.message);
     }
 });
-// Add this to your Express server (app.js)
+
+
+// adding author 
 app.post('/addauthor', async (req, res) => {
     const { author_id, name } = req.body;
 
@@ -247,7 +258,7 @@ app.post('/addauthor', async (req, res) => {
     } catch (err) {
         console.error('Database error:', err.message);
         
-        // Handle duplicate key error specifically
+        // duplicate primary key eror hota hy
         if (err.code === '23505') {
             return res.status(400).send("❌ Author ID already exists");
         }
@@ -303,9 +314,10 @@ app.post('/addreturnedbook', async (req, res) => {
     } catch (err) {
         console.error('Database error:', err.message);
 
-        // Handle duplicate key error specifically
+        // duplicate primary key
+
         if (err.code === '23505') {
-            return res.status(400).send("❌ Return ID already exists");
+            return res.status(400).send(" duplicate primary key");
         }
 
         res.status(500).send("❌ Error adding returned book: " + err.message);
