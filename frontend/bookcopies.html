@@ -1,59 +1,56 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <title>Final Project</title>
-        <!-- Required meta tags -->
+        <title>Book Copies Management</title>
         <meta charset="utf-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, shrink-to-fit=no"
-        />
-
-        
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-            crossorigin="anonymous"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     </head>
 
     <body>
-        
-            <div
-                class="table-responsive"
-            >
-                <table
-                    class="table table-danger table-bordered " id="bookcopiestable"
-                >
+        <div class="container mt-4">
+            <div class="table-responsive">
+                <table class="table table-danger table-bordered" id="bookcopiestable">
                     <thead>
                         <tr>
-                            <th scope="col">copy_id</th>
-                            <th scope="col">book_id</th>
-                            <th scope="col">condition</th>
-                           
+                            <th>Copy ID</th>
+                            <th>Book ID</th>
+                            <th>Condition</th>
                         </tr>
                     </thead>
                     <tbody>
-                       
-                           
+                        <!-- Data will be inserted here -->
                     </tbody>
                 </table>
             </div>
-            
-     
-       
+
+            <div class="card mt-4">
+                <div class="card-header bg-success text-white">
+                    <h4>Add New Book Copy</h4>
+                </div>
+                <div class="card-body">
+                    <form id="addBookCopyForm">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <input type="number" class="form-control" id="copy_id" placeholder="Copy ID" required>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="number" class="form-control" id="book_id" placeholder="Book ID" required>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="condition" placeholder="Condition" required>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success">Add Book Copy</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="message" class="mt-3 alert" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="js/bookcopies.js"></script>
     </body>
 </html>
- <script
-            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-            crossorigin="anonymous"
-        ></script>
-
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-            crossorigin="anonymous"
-        ></script>
-<script src="js/bookcopies.js"></script> 

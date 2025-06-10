@@ -180,3 +180,135 @@ app.post('/addlibrarian', async (req, res) => {
     res.status(500).send("❌ Error inserting librarian.");
   }
 });
+
+
+app.post('/addreservation', async (req, res) => {
+    const { reservation_id, book_id, member_id, reservation_date } = req.body;
+
+    try {
+        const query = `
+            INSERT INTO reservations (reservation_id, book_id, member_id, reserve_date)
+            VALUES ($1, $2, $3, $4)
+        `;
+        await pool.query(query, [reservation_id, book_id, member_id, reservation_date]);
+        res.send("✅ Reservation added successfully!");
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("❌ Error inserting reservation.");
+    }
+});
+// Add this to your Express server (app.js)
+app.post('/addbookcopy', async (req, res) => {
+    const { copy_id, book_id, condition } = req.body;
+
+    try {
+        // Validate required fields
+        if (!copy_id || !book_id || !condition) {
+            return res.status(400).send("❌ All fields are required");
+        }
+
+        const query = `
+            INSERT INTO bookcopies (copy_id, book_id, condition)
+            VALUES ($1, $2, $3)
+            RETURNING *`;
+        
+        const result = await pool.query(query, [copy_id, book_id, condition]);
+        
+        res.status(201).send("✅ Book copy added successfully!");
+    } catch (err) {
+        console.error('Database error:', err.message);
+        
+        // Handle duplicate key error specifically
+        if (err.code === '23505') {
+            return res.status(400).send("❌ Copy ID already exists");
+        }
+        
+        res.status(500).send("❌ Error adding book copy: " + err.message);
+    }
+});
+// Add this to your Express server (app.js)
+app.post('/addauthor', async (req, res) => {
+    const { author_id, name } = req.body;
+
+    try {
+        // Validate required fields
+        if (!author_id || !name) {
+            return res.status(400).send("❌ All fields are required");
+        }
+
+        const query = `
+            INSERT INTO authors (author_id, name)
+            VALUES ($1, $2)
+            RETURNING *`;
+        
+        const result = await pool.query(query, [author_id, name]);
+        
+        res.status(201).send("✅ Author added successfully!");
+    } catch (err) {
+        console.error('Database error:', err.message);
+        
+        // Handle duplicate key error specifically
+        if (err.code === '23505') {
+            return res.status(400).send("❌ Author ID already exists");
+        }
+        
+        res.status(500).send("❌ Error adding author: " + err.message);
+    }
+});
+app.post('/addissuedbook', async (req, res) => {
+    const { issue_id, book_id, member_id, issue_date } = req.body;
+
+    try {
+        // Validate required fields
+        if (!issue_id || !book_id || !member_id || !issue_date) {
+            return res.status(400).send("❌ All fields are required");
+        }
+
+        const query = `
+            INSERT INTO issuedbooks (issue_id, book_id, member_id, issue_date)
+            VALUES ($1, $2, $3, $4)
+            RETURNING *`;
+
+        const result = await pool.query(query, [issue_id, book_id, member_id, issue_date]);
+
+        res.status(201).send("✅ Issued book added successfully!");
+    } catch (err) {
+        console.error('Database error:', err.message);
+
+        // Handle duplicate key error specifically
+        if (err.code === '23505') {
+            return res.status(400).send("❌ Issue ID already exists");
+        }
+
+        res.status(500).send("❌ Error adding issued book: " + err.message);
+    }
+});
+app.post('/addreturnedbook', async (req, res) => {
+    const { return_id, issue_id, return_date } = req.body;
+
+    try {
+        // Validate required fields
+        if (!return_id || !issue_id || !return_date) {
+            return res.status(400).send("❌ All fields are required");
+        }
+
+        const query = `
+            INSERT INTO returnedbooks (return_id, issue_id, return_date)
+            VALUES ($1, $2, $3)
+            RETURNING *`;
+
+        const result = await pool.query(query, [return_id, issue_id, return_date]);
+
+        res.status(201).send("✅ Returned book added successfully!");
+    } catch (err) {
+        console.error('Database error:', err.message);
+
+        // Handle duplicate key error specifically
+        if (err.code === '23505') {
+            return res.status(400).send("❌ Return ID already exists");
+        }
+
+        res.status(500).send("❌ Error adding returned book: " + err.message);
+    }
+});
+
